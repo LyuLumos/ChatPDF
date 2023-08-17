@@ -68,6 +68,23 @@ def parse_pdf(filepath):
     return pdf_text
 
 
+def create_chunks(text, chunk_size, tokenizer):
+    logging.info("Creating chunks.")
+    tokens = tokenizer.tokenize(text)
+    i = 0
+    while i < len(tokens):
+        j = min(i + int(1.5 * chunk_size), len(tokens))
+        while j > i + chunk_size//2:
+            chunk = tokenizer.decode(tokens[i:j])
+            if chunk.endswith(('.', '?', '!', '\n')):
+                break
+            j -= 1
+    if j == i + chunk_size//2:
+        j = min(i + chunk_size, len(tokens))
+    yield tokens[i:j]
+    i = j
+
+
 if __name__ == "__main__":
     # make_directory("downloads")
     # get_relevant_arxiv_papers("quantum computing", "downloads")
