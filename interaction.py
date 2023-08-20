@@ -4,7 +4,7 @@ import tiktoken
 import logging
 import concurrent
 from tqdm import tqdm
-from paper_util import parse_pdf, create_chunks
+from paperutil import parse_pdf, create_chunks
 import config
 
 @retry(stop=stop_after_attempt(3), wait=wait_random_exponential(multiplier=1, max=40))
@@ -56,4 +56,7 @@ def summarize(pdf_path):
     return response.choices[0].message.content
 
 
-            
+
+if __name__ == "__main__":
+    logging.basicConfig(level=logging.INFO)
+    print(summarize("/workspaces/ChatPDF/downloads/1605.08386v1.Heat_bath_random_walks_with_Markov_bases.pdf"))

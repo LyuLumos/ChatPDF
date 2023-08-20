@@ -3,8 +3,7 @@ import os
 from typing import Generator
 import logging
 from PyPDF2 import PdfReader
-
-logging.basicConfig(level=logging.INFO)
+from tqdm import tqdm
 
 
 def make_directory(path):
@@ -63,14 +62,15 @@ def save_paper_info(search_res: Generator, output_path):
 def parse_pdf(filepath):
     reader = PdfReader(filepath)
     pdf_text = ""
-    for page in enumerate(reader.pages):
+    logging.info(f"Parsing %s", filepath)
+    for page in enumerate(tqdm(reader.pages)):
         pdf_text += page[1].extract_text() + f"\nPage {page[0] + 1}\n"
     return pdf_text
 
 
 def create_chunks(text, chunk_size, tokenizer):
     logging.info("Creating chunks.")
-    tokens = tokenizer.tokenize(text)
+    tokens = tokenizer.encode(text)
     i = 0
     while i < len(tokens):
         j = min(i + int(1.5 * chunk_size), len(tokens))
@@ -79,13 +79,14 @@ def create_chunks(text, chunk_size, tokenizer):
             if chunk.endswith(('.', '?', '!', '\n')):
                 break
             j -= 1
-    if j == i + chunk_size//2:
-        j = min(i + chunk_size, len(tokens))
-    yield tokens[i:j]
-    i = j
+        if j == i + chunk_size//2:
+            j = min(i + chunk_size, len(tokens))
+        yield tokens[i:j]
+        i = j
 
 
 if __name__ == "__main__":
+    logging.basicConfig(level=logging.INFO)
     # make_directory("downloads")
     # get_relevant_arxiv_papers("quantum computing", "downloads")
     get_arxiv_papers("1605.08386v1", "downloads")
