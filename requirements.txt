@@ -1,3 +1,4 @@
 arxiv
 openai
 PyPDF2
+tiktoken

@@ -6,3 +6,7 @@ This is a long-term project aimed at using interactive LLM to aid in the reading
 
 
 You can use Backend only to experience ChatPDF CLI.
+
+```py
+python main.py
+```
