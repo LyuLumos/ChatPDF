@@ -33,8 +33,9 @@ def summarize(pdf_path, file_type='paper'):
     text_chunks = [tokenizer.decode(chunk) for chunk in chunks]
     logging.info("Summarizing.")
     # summary_prompt = """Summarize this text from an academic paper. Extract any key points with reasoning.\n\nContent:"""
-    sub_sum_prompts = {"survey": "你是一个专业的计算机专业研究人员，请按格式总结此综述：\n研究的问题\n研究方法\n关键技术创新点\n研究进展，如果没有此部分可以不写，并以markdown形式列出。",
-                        "paper": "你是一个专业的计算机专业研究人员，请按格式总结文献：\n基础理论\n技术框架\n研究方法\n前沿进展\n创新建议，如果没有此部分可以不写，并以markdown形式列出。"}
+    sub_sum_prompts = {"survey": "你是一个专业的计算机专业研究人员，请按格式总结此综述：\n## 研究的问题\n## 研究方法\n## 关键技术创新点\n## 研究进展，如果没有此部分可以不写，并以markdown形式列出，越详细越好。",
+                        "paper": "你是一个专业的计算机专业研究人员，请按格式总结文献：\n## 基础理论\n## 技术框架\n## 研究方法\n## 前沿进展\n## 创新建议，如果没有此部分可以不写，并以markdown形式列出，越详细越好。",
+                        "paper-interview": "你是一个专业的计算机专业研究人员，请按格式总结文献：\n## 研究内容\n## 科学问题\n## 创新性\n## 这篇论文对于毕业学术论文的思考，如果没有此部分可以不写，并以markdown形式列出，越详细越好。"}
     results = ""
     # 多线程总结每个chunk
     with concurrent.futures.ThreadPoolExecutor(max_workers=len(text_chunks)) as executor:
@@ -46,8 +47,9 @@ def summarize(pdf_path, file_type='paper'):
             summary = future.result()
             results += summary
 
-    sum_sum_prompts = {"survey": f"当前总结的内容为{results}，请按格式总结此综述：\n研究的问题\n研究方法\n关键技术创新点\n研究进展，并以markdown形式列出。",
-                        "paper": f"当前总结的内容为{results}，请按格式总结文献：\n基础理论\n技术框架\n研究方法\n前沿进展\n创新建议，并以markdown形式列出。"}
+    sum_sum_prompts = {"survey": f"当前总结的内容为{results}，请按格式总结此综述：\n## 研究的问题\n## 研究方法\n## 关键技术创新点\n## 研究进展，并以markdown形式列出，越详细越好。",
+                        "paper": f"当前总结的内容为{results}，请按格式总结文献：\n## 基础理论\n## 技术框架\n## 研究方法\n## 前沿进展\n## 创新建议，并以markdown形式列出，越详细越好。",
+                        "paper-interview": f"当前总结的内容为{results}，请按格式总结文献：\n## 研究内容\n## 科学问题\n## 创新性\n## 这篇论文对于毕业学术论文的思考，并以markdown形式列出，越详细越好。"}
 
     
     response = openai.ChatCompletion.create(
